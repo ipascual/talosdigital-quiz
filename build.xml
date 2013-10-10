@@ -26,7 +26,7 @@
 	<target name="phpcomposer">
 		<mkdir dir="${phpcomposer.output}"/>
 		<exec command="curl -s https://getcomposer.org/installer | php" dir="${phpcomposer.target}" passthru="true" />
-		<exec command="php composer.phar install --verbose --dry-run" dir="${phpcomposer.target}" passthru="true" />
+		<exec command="php composer.phar install --verbose" dir="${phpcomposer.target}" passthru="true" />
 	</target>
 
 	<!-- zf2-classmap -->
