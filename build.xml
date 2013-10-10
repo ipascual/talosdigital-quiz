@@ -245,23 +245,26 @@
 	<target name="_phpunit">
 		<mkdir dir="${phpunit.output.xml.dir}"/>
 		<mkdir dir="${phpunit.output.html.dir}"/>
-
-		<!-- Module testing -->
 		<foreach param="dirname" absparam="module" target="phpunit-module">
 			<fileset dir="${dir.php.project}/module">
 			<type type="dir" />
 			<depth max="0" min="0" />
-			<exclude name="bin"/>
+				<exclude name="bin"/>
 			</fileset>
 		</foreach>
 	</target>
 	<target name="phpunit-module">
-		<exec command="${phpunit.exec} ${phpunit.args}" dir="${module}/tests" passthru="true" />
-		<xslt
-			file="${phpunit.output.xml.file}"
-			tofile="${junit.output.xml.file}"
-			style="${junit.style}"
-		/>
+		<if>
+			<available file='${module}/tests/phpunit.xml' type='file' />
+			<then>
+				<exec command="${phpunit.exec} ${phpunit.args}" dir="${module}/tests" passthru="true" />
+				<xslt
+					file="${phpunit.output.xml.file}"
+					tofile="${junit.output.xml.file}"
+					style="${junit.style}"
+				/>
+			</then>
+		</if>		
 	</target>
 
 </project>
