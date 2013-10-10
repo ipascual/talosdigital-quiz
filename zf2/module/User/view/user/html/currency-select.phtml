@@ -1,0 +1,20 @@
+<?php 
+$currencies = array(
+	"USD" => "US Dollar",
+	"EUR" => "Euro",
+	"GBP" => "British Pound Sterling",
+	"AUD" => "Australian Dollar",
+	"JPY" => "Japanese Yen",
+	"NZD" => "New Zealand Dollar",
+); 
+?>
+<select id="<?php echo $this->id; ?>" name="<?php echo $this->name; ?>" class="<?php echo $class; ?>">
+	<option value="">Select your currency</option>
+	<?php foreach($currencies as $key => $currency): ?>
+		<?php $selectedAttribute = ""; ?>
+		<?php if($selected == $key): ?>
+			<?php $selectedAttribute = "selected"; ?>
+		<?php endif; ?>
+		<option value="<?= $key ?>" <?= $selectedAttribute ?>><?= $currency ?></option>
+	<?php endforeach; ?>
+</select>

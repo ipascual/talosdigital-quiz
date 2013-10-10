@@ -1,0 +1,110 @@
+<?php
+	$address = $this->user->getAddress("Company");
+	$geo = null;
+	if($address) {
+		$geo = $address->getGeolocation();
+	}
+?>
+<div class="container">
+	<?php //Section Title ?>
+	<div class="main-title row">
+		<div class="span12">
+			<h1 class="page-title">Profile</h1>
+		</div>
+	</div>
+	<div class="spacer-middle"></div>
+	<div class="spacer-large"></div>
+<div id="user-view">
+<div class="row">
+	<div class="span12">
+		<form id="profile_form" action="/user/profile/myaccount" class="" method="POST">
+			<!-- // -->
+			<div id="property" class="step">
+				<!-- Fields -->
+				<h4 class="span12"><span>Personal Info</span></h4>
+				<div class="span12">
+					<div class="span3">
+						<label>First Name</label>
+						<input id="firstname" name="firstname" type="text" class="span3 required" value="<?php echo $this->user->getFirstname() ?>" maxlength="40" />
+					</div>
+					<div class="span3">
+						<label>Last Name</label>
+						<input id="lastname" name="lastname" type="text" class="span3 required" value="<?php echo $this->user->getLastname() ?>" maxlength="40" />
+					</div>
+				</div>
+				<h4 class="span12 move_"><span>Company Details</span></h4>
+				<div class="span12">
+					<div class="span3">
+						<label>Company Name</label>
+						<input id="company_name" name="company_name" type="text" class="span3 ui-wizard-content" value="<?php if($address) { echo $address->getCompanyName(); } ?>" maxlength="40" />
+					</div>
+					<div class="span3">	
+						<label>Phone</label>
+						<input id="phonenumber" name="phonenumber" type="text" class="span3" value="<?php if($this->user->getPhonenumbers()->get(0)) { echo $this->user->getPhonenumbers()->get(0)->getPhonenumber(); } ?>" maxlength="20" />
+					</div>
+				</div>
+				<div class="span12">
+					<div class="span3">
+						<label>Find Company Address</label>
+						<input id="company_address" name="company_address" data-type="company" type="text" class="span3 geo-suggestions ui-wizard-content" />
+					</div>
+					<div class="span3">		
+						<label>Address</label>
+						<input id="company_address" name="company_address" type="text" class="span3 geo-address ui-wizard-content" value="<?php if($address) { echo $address->getStreet(); } ?>" maxlength="60" />
+					</div>	
+				</div>
+				<div class="span12">
+					<div class="span3">	
+						<label>City</label>
+						<input id="company_city" name="company_city" type="text" class="city span3 geo-city ui-wizard-content" value="<?php if($geo) { echo $geo->getCity()->getName(); } ?>" maxlength="40" />
+					</div>	
+					<div class="span3">	
+						<label>Country</label>
+						<?php echo $this->partial("geolocation/html/country-select.phtml", array("id"=>"company_country","name"=>"company_country","class"=>"span3 geo-country")); ?>
+					</div>	
+				</div>
+				<div class="span12">
+					<div class="span3">	
+						<label>State</label>
+						<input id="company_state" name="company_state" type="text" class="state span3 geo-state ui-wizard-content" value="<?php if($geo) { echo $geo->getCity()->getState(); } ?>" maxlength="40" />
+					</div>	
+					<div class="span3">	
+						<label>Zip Code</label>
+						<input id="company_postal_code" name="company_postal_code" type="text" class="span3 geo-post-code ui-wizard-content" value="<?php if($address) { echo $address->getPostCode(); } ?>" maxlength="10" />
+					</div>
+				</div>
+				<!-- Fields -->
+				
+				<h4 class="span12 move_"><span>Login Details</span></h4>
+				<div class="span12">
+					<div class="span3">
+					<label>Email</label>
+					<input id="email" name="email" type="text" class="span3" onchange="toggleLoginForm('email')" value="<?php echo $this->user->getEmail() ?>" maxlength="40" />
+					</div>
+					<div class="span3">
+					<label>Current Password</label>
+					<input id="current_password" name="current_password" type="password" class="span3" value="" />
+					</div>
+				</div>
+				<div class="span12 last">
+					<div class="span3">
+					<label>New Password</label>
+					<input id="password" name="password" type="password" class="span3" onchange="toggleLoginForm('password')" value="" />
+					</div>
+					<div class="span3">
+					<label>Confirm Password</label>
+					<input id="confirm_password" name="confirm_password" type="password" class="span3" value="" />
+					</div>
+				</div>
+
+				<button type="submit" class="finish btn btn-yellow btn-large pull-left" value="Save">Save</button>
+		</form>
+	</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+	var mzView = "user-profile-myaccount";
+	var selectedCountry = "<?= $geo ? $geo->getCity()->getCountry()->getName() : "" ; ?>";
+</script>

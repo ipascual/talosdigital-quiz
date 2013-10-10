@@ -1,0 +1,38 @@
+      <section  class="mainContent" >
+          <div class="row content">
+        <div class="eight columns push-four">
+            <div class="your-information box-2">
+                <h4 class="title-1">Title</h4>
+                <hr />
+                
+                    <ul class="no-bullet shadow-list li-item medium">
+                    <?php $destinations = $this -> destination;
+                    
+                    foreach ($destinations as $destination) :?>
+                    <li>
+                        <div class="row">
+                            <div class="eight columns">
+                                <h4><?php echo $this->partial("geolocation/html/geolocation.phtml", array("geolocation" => $destination->getLocation())); ?></h4>
+                            </div>
+                            <div class="four columns">
+                                <div class="buttons right">
+                    <?php 
+                        if($destination->getAdvice() != null) { ?>
+                        <a href="/advice/manage/create?destinationId=<?php echo $destination -> getId() ?> " class="button round blue"style="float:right">Edit</a>
+                        <?php } else{?>
+                            <a href="/advice/manage/create?destinationId=<?php echo $destination -> getId()?> "class="button round yellow">Create</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <?php } ?>
+                    <?php endforeach;?>
+                </ul>
+                <p class="text-right"></p>
+            </div>
+            <!-- End Form1-->
+        </div><!--/8 col Main-->
+        <!-- Left column -->
+        <?php echo $this -> partial("user/html/left.phtml", array("active" => 4,"user" => $this->user));?>
+        </div>
+      </section> 

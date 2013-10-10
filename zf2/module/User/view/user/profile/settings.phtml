@@ -1,0 +1,90 @@
+<div class="container">
+	<?php //Section Title ?>
+	<div class="main-title row">
+		<div class="span12">
+			<h1 class="page-title">Settings</h1>
+		</div>
+	</div>
+	<div class="spacer-middle"></div>
+	<div class="spacer-large"></div>
+	<div id="user-view">
+	<div class="row settings">
+		<div class="span12">
+			<form id="settings_form" action="/user/profile/settings" class="" method="POST">
+				<!-- // -->
+				<div id="property" class="step">
+					<!-- Fields -->
+					<div class="clearfix input-append mainblock">
+						<label class="block labels">WACC / Discount Rate</label>
+						<div class="block">
+							<input id="wacc" name="wacc" type="text" class="span1" style="width:62px" value="<?php echo $this->user->getWacc(); ?>" /><span class="add-on">%</span>	
+						</div>
+										
+					</div>
+
+					<!-- radio inputs -->
+						<!-- label -->
+						
+						<!-- radio group -->
+						<div class="block radios mainblock">
+							<label class="block labels">Area Measurement</label> 
+							<!-- labelx -->
+							<div class="switch">
+								<label id="lease_area_unit_sqm" for="lease_area_unit_sqm" class="radio-enable"><span>Sq M</span></label>
+								<label id="lease_area_unit_sqf" for="lease_area_unit_sqf" class="radio-disable"><span>Sq Ft</span></label>
+							</div>
+							<div style="opacity: 0"><label class="span1" for="area_unit_sqm">Sq M</label>
+							<input type="radio" name="area_unit" id="area_unit_sqm" value="sqm" <?php if($user->getAreaUnit() == "sqm") { echo "checked"; } ?> class="ui-wizard-content" />
+							<label class="span1" for="	area_unit_sqf">Sq Ft</label>
+							<input type="radio" name="area_unit" id="area_unit_sqf" value="sqf" <?php if($user->getAreaUnit() == "sqf") { echo "checked"; } ?> class="ui-wizard-content" /></div>
+						</div>
+					<!-- // -->
+
+					<div class="clearfix row block mainblock">
+						<label class="block labels">Preferred Currency</label>
+						<?php echo $this->partial("user/html/currency-select", array("id" => "currency", "name" => "currency", "class" =>"required ui-wizard-content", "selected" => $user->getCurrency())); ?>
+					</div>
+
+				<!--h4>Your current settings</h4>
+				<div class="clearfix">
+					<div class="span4">Currency: ?php echo $formatter->filter("currency", 12345.5226); ?></div>
+					<div class="span4">Date: <?php echo $formatter->filter("date", new DateTime()); ?></div>
+					<div class="span4">Number: <?php echo $formatter->filter("number", 12345678.23); ?></div>
+					<div class="span4">Percentage: <?php echo $formatter->filter("percentage", 0.03); ?></div>
+					<div class="span4">-Area: <?php echo $formatter->filter("number", 56); ?> <?php echo $user->getAreaUnit(); ?></div>
+				</div-->
+				<div class="separator"></div>
+				<div class="row">
+					<div class="block">
+						<button type="submit" class="finish btn btn-yellow btn-large pull-left" value="Save">Save</button>
+					</div>
+				</div>
+				<div class="spacer-large"></div>
+			</div>
+			<p>&nbsp;</p>
+		</form>
+	</div>
+	</div>
+</div>
+</div>
+<script>
+	$(document).ready(function(){
+		if($('#area_unit_sqm').is(':checked')) {
+			$("#lease_area_unit_sqm").addClass('selected');
+		}
+		else{
+			$("#lease_area_unit_sqf").addClass('selected');
+		}
+	});
+	var mzView = "user-profile-settings";
+    $("[for='lease_area_unit_sqm']").click(function(){
+    	$("#area_unit_sqm").prop("checked", true);
+    	$("#lease_area_unit_sqf").removeClass('selected');
+    	$(this).addClass('selected');
+    });
+    $("[for='lease_area_unit_sqf']").click(function(){
+    	$("#area_unit_sqf").prop("checked", true);
+    	$("#lease_area_unit_sqm").removeClass('selected');
+    	$(this).addClass('selected');
+    });
+</script>

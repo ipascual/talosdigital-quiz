@@ -1,0 +1,18 @@
+<h2 class="form-signin-heading">Candidate:</h2>
+<form name="quizForm">
+    <div class="form-group">
+    <input type="text" ng-model="user.firstname" class="form-control top" placeholder="First Name" autofocus="" required>
+    <input type="text" ng-model="user.lastname" class="form-control none" placeholder="Last Name" autofocus="" required>
+    <input type="email" ng-model="user.email" class="form-control bottom" placeholder="Email" >
+    <div ng-repeat="quiz in quizes">
+        <h4 class="well-title">
+            <input ng-click="chooseQuiz(quiz.id)" type="radio" name="id" value="{{ quiz.id }}"> {{ quiz.name }}
+        </h4>
+        <h6 class="well" style="margin-top: 10px">{{ quiz.description }}</h6><div class="list-group-item"><strong>Time:</strong> {{ quiz.duration }}</div>
+    </div>
+        <br/>
+    <button type="submit" ng-click="startQuiz()" class="btn btn-primary pull-right btn-lg">Start</button>
+    </div>
+</form>
+
+

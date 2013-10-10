@@ -1,0 +1,72 @@
+<div class="row">
+	<div class="span3">
+		<?php echo $this->partial("/user/profile/left.phtml", array("option" => 3)); ?>
+	</div>
+	<div class="span6">
+
+<section class="mainContent">
+	<div class="row content">
+				<ul class="shadow-list no-bullet li-social">
+					<li>
+						<div class="row">
+							<!-- row -->
+							<div class="one columns">
+								<!-- 1/3 columns -->
+								<span class="sprite mail">mail</span>
+							</div><!-- /1/3 columns -->
+							<div class="seven columns">
+								<!-- 2/3 columns -->
+								<p class="no-margin grayText m-top-10">
+									<strong>Mail</strong>
+								</p>
+							</div><!-- /2/3 columns -->
+							<div class="four columns">
+								<div class="buttons right">
+									<p class="m-top-10">
+										<?php if($this->user->isValidated("email")) : ?>
+											<span class="button radius small green">Verified</span>	
+										<?php else: ?>
+											<a href="/user/profile/verify?method=email" class="button radius small">Verify</a>
+										<?php endif; ?>
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- /row -->
+					</li>
+					<li>
+						<div class="row">
+							<!-- row -->
+							<div class="one columns">
+								<!-- 1/3 columns -->
+								<span class="sprite fb">facebook</span>
+							</div><!-- /1/3 columns -->
+							<div class="seven columns">
+								<!-- 2/3 columns -->
+								<p class="no-margin grayText m-top-10">
+									<strong>Facebook</strong>
+								</p>
+								<?php if($this->user->isValidated("facebook")) : ?>
+									<br />
+									<a href="/auth/unlink" class="confirmWindow">Unlink Facebook account</a>
+								<?php endif; ?>
+							</div><!-- /2/3 columns -->
+							<div class="four columns">
+								<div class="buttons right">
+									<p class="m-top-10">
+										<?php if($this->user->isValidated("facebook")) : ?>
+											<span class="button radius small green">Verified</span>
+										<?php else: ?>
+											<a href="/user/profile/verify?method=facebook" class="button radius small">Verify</a>
+										<?php endif; ?>
+										
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- /row -->
+					</li>
+				</ul>
+			</div>
+		</div>
+</div>

@@ -1,0 +1,46 @@
+<?php
+$user = $this->user;
+?>
+<div class="row">
+	<div class="span3">
+		<?php echo $this->partial("user/profile/left.phtml", array("option"=>1)); ?>
+	</div><!--span3-->
+	<div class="span6">
+	<form action="/user/profile/login" method="post" id="email-form">
+		<input type="hidden" name="form-action" value="email" />
+		<label for="email">E-mail</label>
+		<input type="text" placeholder="E-mail" class="required email" id="email" name="email" value="<?php echo $user->getEmail();?>" />
+		
+		<input type="submit" class="btn btn-success btn-small" value="Save"/>
+	</form>
+	<br />
+	<form action="/user/profile/login" method="post" id="password-form">
+		<input type="hidden" name="form-action" value="password" />
+		<label for="pwd">Contraseña actual</label>
+		<input type="password" placeholder="" class="required" id="password" name="password" value="" />
+		<br />
+		<label for="pwd">Nueva Contraseña</label>
+		<input type="password" placeholder="" class="required" id="password-new" name="password-new" value="" />
+		<br />
+		<label for="rewpwd">Escriba otra vez la contraseña</label>
+		<input type="password" placeholder="" class="required passwordRepeat" id="passwordrepeat" name="passwordrepeat" />
+		<br />
+		<input type="submit" class="btn btn-success btn-small" value="Save"/>
+	</form>
+	</div><!--span6-->
+</div><!--row-->
+
+<!--validate--> 	
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#email-form').validate();
+	$('#password-form').validate({
+		rules: {
+			passwordrepeat: {
+				required: true,
+				equalTo: "#password-new"
+			},
+		},
+	});
+});
+</script>

@@ -1,0 +1,35 @@
+<div class="row-fluid">
+	<div class="span12">
+		<h2 class="page-title">Dashboard</h2>
+	</div>
+</div>
+
+<div class="container-fluid">
+	<div class="spacer-middle"></div>
+	<div class="white-box">
+		<div class="row-fluid">
+			<div class="span12"><span>Property Lease Report</span>
+				<a href="/report/plrwizard/index"><button type="button" class="btn btn-large btn-yellow pull-right">Create New Report</button></a>
+				<br />
+				<a href="/report/plrwizard/index"><?php echo $plrs->count(); ?> reports</a>
+			</div>
+		</div>
+	</div>
+		
+	<div class="spacer-middle"></div>
+	<div class="white-box">
+		<div class="row-fluid">
+			<div class="span12"><span>Comparison Report</span>
+				<a href="/report/crmanage/edit"><button type="button" class="btn btn-large btn-yellow pull-right">Create New Report</button></a>
+				<br />
+				<a href="/report/crmanage/index"><?php echo $crs->count(); ?> reports</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	// sidebar
+	var mzView = "user-profile-index";
+</script>

@@ -1,0 +1,22 @@
+picture manager
+
+<script src="/js/jquery.upload.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	$(function() {
+		$('#file2').change(function() {
+			$(this).upload('/upload.php', $('#data_field').serialize(), function(res) {
+				var filename = $(res).find('name').text(), data = $(res).find('data').text();
+
+				alert('Filename: ' + filename + "\n" + 'Data: ' + data);
+			}, 'xml');
+		});
+	}); 
+</script>
+
+<form action="/upload.php">
+	<input type="text" name="data" id="data_field" value="Your data">
+	<input type="file" name="file" id="file2">
+	<input type="submit" value="submit">
+</form>
+

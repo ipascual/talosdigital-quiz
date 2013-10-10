@@ -1,0 +1,64 @@
+
+<section class="mainContent">
+	<div class="row content">
+		<div class="eight columns push-four">
+			<div class="itineraries">
+				<form action="/user/profile/markread" method="post" name="formMarkRead" id="formMarkRead">
+					<h3> Notifications/Text Messages</h3>
+					<table>
+						<th>Read</th>
+						<th>Alert Message</th>
+						<?php
+							$alertKeys = $this->user->getAlerts()->getKeys();
+							$alerts = $this->user->getAlerts();
+							foreach ($alertKeys as $alertKey):
+								$alert = $alerts->get($alertKey);
+						?>
+							<tr>
+								<td>
+									<input id="<?= $alertKey; ?>" name=id="<?= $alertKey; ?>" type="checkbox" 
+									<?php if ($alert->getStatus() == "read") echo "checked"; ?>
+								</td><td>
+									<?= $alert->getContent(); ?>
+								</td>
+							</tr>	
+						<?php endforeach; ?>
+					</table>	
+					<hr />
+					<br />
+					<a style="float: right" href="javascript:document.getElementById('formMarkRead').submit();" class="radius secondary button">Mark read</a>
+				</form>
+				<?php $preferences = $this->user->getNotifications(); ?>
+				<form action="/user/profile/notifications" method="post" name="form">
+					<br /><br />
+					<strong><font size=4 style="float: left"> Notify New Offer</font></strong>
+					<?php
+					$preferences = $this->user->getNotifications();
+					?>
+					<strong><font size=4> Alert New Request Event</font></strong>
+                    <div class="six columns offset-by-six">
+						<?php if ($preferences[$user::ALERT_NEW_REQUEST_EVENT] == false) : ?>
+							<input  name="alert_new_request_event" type="checkbox" value="alert_new_request_event" />
+						<?php else : ?>
+							<input  name="alert_new_request_event" type="checkbox" value="alert_new_request_event" checked="checked" />
+						<?php endif; ?>
+                        Send Notifications
+                    </div>
+                    <br />
+                    <hr />
+					</ul>
+				</form>
+				<br />
+				<a style="float: right" href="javascript:submitForm()" class="radius secondary button">Save settings</a>
+			</div>
+		</div><!--/8 col Main-->
+		<?php // echo $this->partial("user/html/left.phtml", array("active" => 2, "user" => $this->user));   ?>
+	</div><!--/Row Content-->
+</section><!--/Main Content-->
+<script>
+    function submitForm() {
+        
+        document.form.submit();
+        
+    }
+</script>

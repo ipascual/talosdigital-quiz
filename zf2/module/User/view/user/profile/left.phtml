@@ -1,0 +1,44 @@
+<style>
+	#nav1 li {
+		float: left;
+		list-style: none;
+		padding-left: 75px;
+	}
+	#nav1 li a.active {
+		background-color: red;
+	}
+</style>
+<h5><strong>PHOTO</strong></h5>
+<div id="nav1">
+	<ul>
+		<li>
+			<?php $class = ""; ?>
+			<?php if($this->option == 0): ?>
+				<?php $class = "active"; ?>
+			<?php endif; ?>
+			<h4><a href="/user/profile/myaccount" class="<?php echo $class ?>">General</a></h4>
+		</li>
+		<li>
+			<?php $class = ""; ?>
+			<?php if($this->option == 1): ?>
+				<?php $class = "active"; ?>
+			<?php endif; ?>
+			<h4><a href="/user/profile/login" class="<?php echo $class ?>">Cuenta</a></h4>
+		</li>
+		<li>
+			<?php $class = ""; ?>
+			<?php if($this->option == 2): ?>
+				<?php $class = "active"; ?>
+			<?php endif; ?>
+			<h4><a href="/user/profile/contacts" class="<?php echo $class ?>">Contacto</a></h4>
+		</li>
+		<li>
+			<?php $class = ""; ?>
+			<?php if($this->option == 3): ?>
+				<?php $class = "active"; ?>
+			<?php endif; ?>
+			<h4><a href="/user/profile/verify" class="<?php echo $class ?>">Verificar</a></h4>
+		</li>
+	</ul>
+</div>
+

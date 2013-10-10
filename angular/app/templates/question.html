@@ -1,0 +1,30 @@
+<div ng-init="init()" class="question">
+  <h2 class="form-signin-heading"><span class="text-muted">{{ index +1 }} </span><span ng-bind="question.description" compile="question.description" ></span></h2>
+  <form>
+    <div class="form-group">
+        <div ng-repeat="choice in question.choices">
+
+            <div ng-show="single" class="radio">
+                  <label>
+                    <input type="radio" name="choice_{{ $index }}" ng-model="choice.selected" ng-click="updateRadioSelected($index)" ng-value="true" />
+                    <span ng-bind="choice.description" compile="choice.description"></span>
+                  </label>
+                  <div>{{ choice.state }}</div>
+            </div>
+            <div ng-show="multiple" class="radio">
+                  <label>
+                    <input type="checkbox" name="choice_{{ $index }}" ng-model="choice.selected" ng-click="updateCheckboxSelected()" />
+                    <span ng-bind="choice.description" compile="choice.description"></span>
+                  </label>
+                  <div>{{ choice.state }}</div>
+            </div>
+        </div>
+        <button type="button" ng-show="hasPrevious" ng-click="back(result_id, index)" class="btn btn-primary pull-left btn-lg">Back</button>
+        <button type="button" ng-show="hasNext" ng-click="next(result_id, index)" class="btn btn-primary pull-right btn-lg">Next</button>
+        <button type="button" ng-show="hasFinish" ng-click="finish(result_id, index)" class="btn btn-primary pull-right btn-lg">Finish</button>
+  </form>
+  <span class="help-block clearfix">{{ index +1 }}/{{ total_questions }}</span>
+  <span ng-show="showTime" class="help-block clearfix">{{ time_spent }} minutes has been spent</span>
+
+</div>
+

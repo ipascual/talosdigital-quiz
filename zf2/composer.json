@@ -1,0 +1,26 @@
+{
+    "name": "m0t0r/talos-quiz-engine",
+    "description": "Quiz engine",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "framework",
+        "zf2",
+        "quiz",
+        "engine"
+    ],
+    "homepage": "http://www.talosdigital.com/",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.3",
+		"zendframework/zendframework": "2.*@stable",
+		"doctrine/doctrine-mongo-odm-module": "*@stable",
+		"myzend/core": "0.*",
+		"myzend/email": "0.*"
+    },
+    "require-dev": {
+		"phpunit/phpunit": "3.7.*"
+    },
+    "config": {
+    	"bin-dir": "bin/"
+    }
+}

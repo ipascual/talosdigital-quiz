@@ -1,0 +1,48 @@
+<?php
+$user = $this->user;
+?>
+<div class="row">
+	<div class="span3">
+		<?php echo $this->partial("user/profile/left.phtml", array("option" => 2)); ?>
+	</div><!--span3-->
+	<div class="span6">
+		<form action="/user/profile/contacts" method="post" id="contacts">
+			<label for="phone">Telefono</label>
+			<?php if($user->getPhonenumbers()->get(0) != null){
+				$phone = $user->getPhonenumbers()->get(0)->getPhonenumber();
+			}
+			else{
+				$phone = "";
+			}
+			?>
+			<input type="text" placeholder="phone" name="phone" class="required number" id="phone" value="<?php echo $phone?>" />
+			<br />
+			<label for="address">Direccion</label>
+			<?php if($user->getAddresses()->get(0) != null){
+				$address = $user->getAddresses()->get(0)->getStreet();
+			}
+			else{
+				$address = "";
+			}
+			?>
+			<input type="text" placeholder="address" name="address" class="required" id="address" value="<?php echo $address ?>" />
+			<label for="city">Cuidad</label>
+			<?php if($user->getAddresses()->get(0) != null){
+				$city = $user->getAddresses()->get(0);
+			}
+			else{
+				$city = "";
+			}
+			?>
+			<input type="text" placeholder="city" name="city" class="geoSuggestions required" id="city" value="<?php echo $city ?>"/>
+			<br />
+			<input type="submit" value="Save"  class="btn btn-success" />
+		</form>
+	</div><!--span6-->
+</div><!--row-->
+<!--validate-->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#contacts').validate();
+	}); 
+</script>

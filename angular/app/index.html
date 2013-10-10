@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="quizApp">
+<head>
+<title>Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
+<link rel="stylesheet" href="css/main.css" media="screen">
+<link rel="stylesheet" href="css/app.css" />
+<link rel="stylesheet" href="lib/syntaxhighlighter/styles/shCore.css" >
+<link rel="stylesheet" href="lib/syntaxhighlighter/styles/shCoreDefault.css" >
+
+
+
+
+</head>
+<body>
+<div class="container home">
+      <img src="img/taloslogo.png" alt="Talos Digital logo">
+      <div ng-view></div>
+</div>
+
+<script src="lib/angular/angular.js"></script>
+<script src="lib/angular/angular-cookies.js"></script>
+<script src="lib/jquery-1.10.2.min.js"></script>
+<script src="lib/bootstrap.min.js"></script>
+<script src="js/app.js"></script>
+
+<script src="js/services/Session.js"></script>
+<script src="js/services/Quiz.js"></script>
+<script src="js/services/User.js"></script>
+
+<script src="js/controllers/QuestionCtrl.js"></script>
+<script src="js/controllers/QuizCtrl.js"></script>
+<script src="js/controllers/ResultCtrl.js"></script>
+
+<script src="lib/syntaxhighlighter/scripts/shCore.js"></script>
+<script src="lib/syntaxhighlighter/scripts/shBrushPhp.js"></script>
+
+<script type="text/javascript">
+     //SyntaxHighlighter.all();
+</script>
+
+
+  </body>
+</html>

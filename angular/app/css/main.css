@@ -1,0 +1,54 @@
+input[type="checkbox"]{
+float: left;
+margin-left: -20px;
+}
+h2, .h2 {
+font-size: 26px;
+margin-bottom: 20px;
+}
+.container.home{
+max-width: 590px;
+padding: 15px;
+margin: 0 auto;
+overflow: hidden;
+}
+.question{
+    max-width: 600px;
+}
+.container.home img{
+display: block;
+margin: 20px auto;
+}
+body{
+    background-color:#eee;
+}
+input.form-control.none{
+    border-radius:0;
+}
+input.form-control.top{
+    border-radius:4px 4px 0px 0px;
+}
+input.form-control.bottom{
+    border-radius:0px 0px 4px 4px;
+}
+.home .help-block {
+display: block;
+margin-top: 5px;
+clear: both;
+margin-bottom: 10px;
+color: #737373;
+font-size: 13px;
+text-align: right;
+}
+.question .help-block {
+padding-top: 15px;
+text-align: center;
+}
+.question img{
+    display:block;
+    margin:35px auto;
+}
+form[name="quizForm"]{
+    margin:0 auto;
+    width: 400px;
+}
