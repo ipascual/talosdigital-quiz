@@ -14,4 +14,4 @@ zf2/bin/*
 .sass-cache
 min-*
 angular/logs/*
-
+.pearrc

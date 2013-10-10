@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+  <duplication lines="65" tokens="151">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php" line="28"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/Bootstrap.php" line="26"/>
+    <codefragment>        if (is_readable(__DIR__ . '/TestConfig.php')) {
+            $testConfig = include __DIR__ . '/TestConfig.php';
+        } else {
+            $testConfig = include __DIR__ . '/TestConfig.php.dist';
+        }
+
+        $zf2ModulePaths = array();
+
+        if (isset($testConfig['module_listener_options']['module_paths'])) {
+            $modulePaths = $testConfig['module_listener_options']['module_paths'];
+            foreach ($modulePaths as $modulePath) {
+                if (($path = static::findParentPath($modulePath)) ) {
+                    $zf2ModulePaths[] = $path;
+                }
+            }
+        }
+
+        $zf2ModulePaths  = implode(PATH_SEPARATOR, $zf2ModulePaths) . PATH_SEPARATOR;
+        $zf2ModulePaths .= getenv('ZF2_MODULES_TEST_PATHS') ?: (defined('ZF2_MODULES_TEST_PATHS') ? ZF2_MODULES_TEST_PATHS : '');
+
+        static::initAutoloader();
+
+        // use ModuleManager to load this module and it's dependencies
+        $baseConfig = array(
+            'module_listener_options' =&gt; array(
+                'module_paths' =&gt; explode(PATH_SEPARATOR, $zf2ModulePaths),
+            ),
+        );
+
+        $config = ArrayUtils::merge($baseConfig, $testConfig);
+
+        $serviceManager = new ServiceManager(new ServiceManagerConfig());
+        $serviceManager-&gt;setService('ApplicationConfig', $config);
+        $serviceManager-&gt;get('ModuleManager')-&gt;loadModules();
+
+        static::$serviceManager = $serviceManager;
+        static::$config = $config;
+        
+        self::destroyDatabase(true);
+    }
+
+    public static function getServiceManager()
+    {
+        return static::$serviceManager;
+    }
+
+    public static function getConfig()
+    {
+        return static::$config;
+    }
+
+    protected static function initAutoloader()
+    {
+        $vendorPath = static::findParentPath('vendor');
+
+        if (is_readable($vendorPath . '/autoload.php')) {
+            $loader = include $vendorPath . '/autoload.php';
+        } else {
+            $zf2Path = getenv('ZF2_PATH') ?: (defined('ZF2_PATH') ? ZF2_PATH : (is_dir($vendorPath . '/ZF2/library') ? $vendorPath . '/ZF2/library' : false));
+
+            if (!$zf2Path) {
+                throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+            }
+
+            include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+</codefragment>
+  </duplication>
+  <duplication lines="31" tokens="81">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php" line="153"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/Bootstrap.php" line="147"/>
+    <codefragment>    protected static function destroyDatabase($force = false) {
+        global $argv, $argc;
+
+        $keep = false;        
+        foreach($argv as $arg) {
+            if($arg == "--debug") {
+                $keep = true;        
+            }
+        }
+        
+        if(! $keep || $force) {
+            $databaseName = self::getDatabaseName();
+            $dm = self::getServiceManager()-&gt;get('doctrine.documentmanager.odm_default');
+            $collections = $dm-&gt;getConnection()-&gt;selectDatabase($databaseName)-&gt;listCollections();
+            foreach ($collections as $collection) {
+                $collection-&gt;remove(array(), array('safe' =&gt; true));
+            }
+            //Clear cache
+            $dm-&gt;clear();
+        }
+    }
+    
+    protected static function getDatabaseName() {
+        $config = self::$serviceManager-&gt;get('Config');
+        return $config['doctrine']['configuration']['odm_default']['default_db'];
+        
+    }
+
+}
+
+Bootstrap::init();
+</codefragment>
+  </duplication>
+  <duplication lines="53" tokens="114">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractControllerZendtest.php" line="5"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/AbstractControllerZendtest.php" line="5"/>
+    <codefragment>use ApplicationTest\Bootstrap;
+use User\Service\UserService;
+
+class AbstractControllerZendtest extends AbstractHttpControllerTestCase
+{
+    protected $traceError = true;
+      
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+        $this-&gt;setApplicationConfig(
+            include __DIR__ . '/../TestConfig.php'
+        );
+        
+    }
+    
+    protected function loginByEmail($email) {
+        $sm = $this-&gt;getServiceManager();
+        $authService = $sm-&gt;get('zfcuser_auth_service');
+        $authAdapter = $sm-&gt;get('ZfcUser\Authentication\Adapter\AdapterChain');
+        $authPlugin = new \User\Controller\Plugin\AuthPlugin();
+        $authPlugin-&gt;setAuthService($authService);
+        $authPlugin-&gt;setAuthAdapter($authAdapter);
+        $authPlugin-&gt;loginByEmail($email);
+    }
+    
+    protected function loginById($id){
+        $userService = new UserService($this-&gt;getServiceManager());
+        $user = $userService-&gt;findOneBy(array('id' =&gt; $id));
+        if($user == null) {
+            throw new \Exception("The user does not exist.");
+        }
+        $this-&gt;loginByEmail($user-&gt;getEmail());
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();
+</codefragment>
+  </duplication>
+  <duplication lines="32" tokens="33">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractTestCase.php" line="5"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/AbstractTestCase.php" line="5"/>
+    <codefragment>use ApplicationTest\Bootstrap;
+
+class AbstractTestCase extends PHPUnit_Framework_TestCase
+{
+
+    protected function alterConfig(array $config) {
+        return $config;
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();        
+    }
+
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+</codefragment>
+  </duplication>
+  <duplication lines="10" tokens="28">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/Tests/QuizServiceTest.php" line="34"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/Tests/QuizServiceTest.php" line="79"/>
+    <codefragment>        $question1 = new Question();
+        $question1-&gt;setDescription('Which of the following PHP tags do NOT require additional changes of php.ini?');
+        
+        //Choices
+        $choice1 = new Choice();
+        $choice1-&gt;setDescription('&lt; ?php     ?&gt;');
+        $choice1-&gt;setState(Choice::CHOICE_STATE_CORRECT);
+        $question1-&gt;getChoices()-&gt;add($choice1);
+      
+        $choice2 = new Choice();
+</codefragment>
+  </duplication>
+  <duplication lines="12" tokens="27">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/Module.php" line="77"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/User/Module.php" line="97"/>
+    <codefragment>        $event-&gt;getTarget()-&gt;userService = new UserService($sm);
+        
+        //Helpers
+        //...
+        
+        
+        //Validator
+        //...
+
+        //Vendor Helpers
+        //$event-&gt;getTarget()-&gt;facebook = $sm-&gt;get('facebook');
+        $event-&gt;getTarget()-&gt;email = $sm-&gt;get('email');
+</codefragment>
+  </duplication>
+  <duplication lines="168" tokens="376">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php" line="12"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/Bootstrap.php" line="15"/>
+    <codefragment>ini_set("display_errors", 1); 
+
+chdir(__DIR__);
+
+class Bootstrap
+{
+    protected static $serviceManager;
+    protected static $config;
+    protected static $bootstrap;
+
+    public static function init()
+    {
+        //Environment
+        putenv('APPLICATION_ENV=test');
+
+        // Load the user-defined test configuration file, if it exists; otherwise, load
+        if (is_readable(__DIR__ . '/TestConfig.php')) {
+            $testConfig = include __DIR__ . '/TestConfig.php';
+        } else {
+            $testConfig = include __DIR__ . '/TestConfig.php.dist';
+        }
+
+        $zf2ModulePaths = array();
+
+        if (isset($testConfig['module_listener_options']['module_paths'])) {
+            $modulePaths = $testConfig['module_listener_options']['module_paths'];
+            foreach ($modulePaths as $modulePath) {
+                if (($path = static::findParentPath($modulePath)) ) {
+                    $zf2ModulePaths[] = $path;
+                }
+            }
+        }
+
+        $zf2ModulePaths  = implode(PATH_SEPARATOR, $zf2ModulePaths) . PATH_SEPARATOR;
+        $zf2ModulePaths .= getenv('ZF2_MODULES_TEST_PATHS') ?: (defined('ZF2_MODULES_TEST_PATHS') ? ZF2_MODULES_TEST_PATHS : '');
+
+        static::initAutoloader();
+
+        // use ModuleManager to load this module and it's dependencies
+        $baseConfig = array(
+            'module_listener_options' =&gt; array(
+                'module_paths' =&gt; explode(PATH_SEPARATOR, $zf2ModulePaths),
+            ),
+        );
+
+        $config = ArrayUtils::merge($baseConfig, $testConfig);
+
+        $serviceManager = new ServiceManager(new ServiceManagerConfig());
+        $serviceManager-&gt;setService('ApplicationConfig', $config);
+        $serviceManager-&gt;get('ModuleManager')-&gt;loadModules();
+
+        static::$serviceManager = $serviceManager;
+        static::$config = $config;
+        
+        self::destroyDatabase(true);
+    }
+
+    public static function getServiceManager()
+    {
+        return static::$serviceManager;
+    }
+
+    public static function getConfig()
+    {
+        return static::$config;
+    }
+
+    protected static function initAutoloader()
+    {
+        $vendorPath = static::findParentPath('vendor');
+
+        if (is_readable($vendorPath . '/autoload.php')) {
+            $loader = include $vendorPath . '/autoload.php';
+        } else {
+            $zf2Path = getenv('ZF2_PATH') ?: (defined('ZF2_PATH') ? ZF2_PATH : (is_dir($vendorPath . '/ZF2/library') ? $vendorPath . '/ZF2/library' : false));
+
+            if (!$zf2Path) {
+                throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+            }
+
+            include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+
+        }
+
+        AutoloaderFactory::factory(array(
+            'Zend\Loader\StandardAutoloader' =&gt; array(
+                'autoregister_zf' =&gt; true,
+                'namespaces' =&gt; array(
+                    __NAMESPACE__ =&gt; __DIR__ . '/' . __NAMESPACE__,
+                ),
+            ),
+        ));
+    }
+
+    protected static function findParentPath($path)
+    {
+        $dir = __DIR__;
+        $previousDir = '.';
+        while (!is_dir($dir . '/' . $path)) {
+            $dir = dirname($dir);
+            if ($previousDir === $dir) return false;
+            $previousDir = $dir;
+        }
+        return $dir . '/' . $path;
+    }
+    
+    /**
+     * Common test functions
+     */
+    public static function setUp() {
+        self::createDatabase();
+    }
+    
+    public static function tearDown() {
+        self::destroyDatabase();
+    }
+    
+    protected static function createDatabase(){
+        //Global fixtures
+        $fixturesFolder = __DIR__.'/../../Application/tests/fixtures';
+        try {
+            if ($dir = opendir($fixturesFolder)) {
+                while (false !== ($file = readdir($dir))) {
+                    if ($file != "." &amp;&amp; $file != "..") {
+                        $data = null;
+                        $databaseName = self::getDatabaseName();
+                        require $fixturesFolder."/".$file;
+                        $collection = str_replace(".php", "", $file);
+                        $dm = self::getServiceManager()-&gt;get('doctrine.documentmanager.odm_default');
+                        $collection = $dm-&gt;getConnection()-&gt;selectCollection($databaseName, $collection);
+                        $collection-&gt;batchInsert($data);
+                    }
+                }
+                closedir($dir);
+            }
+        }
+        catch(\Exception $e) {
+            
+        }
+    }
+    
+    protected static function destroyDatabase($force = false) {
+        global $argv, $argc;
+
+        $keep = false;        
+        foreach($argv as $arg) {
+            if($arg == "--debug") {
+                $keep = true;        
+            }
+        }
+        
+        if(! $keep || $force) {
+            $databaseName = self::getDatabaseName();
+            $dm = self::getServiceManager()-&gt;get('doctrine.documentmanager.odm_default');
+            $collections = $dm-&gt;getConnection()-&gt;selectDatabase($databaseName)-&gt;listCollections();
+            foreach ($collections as $collection) {
+                $collection-&gt;remove(array(), array('safe' =&gt; true));
+            }
+            //Clear cache
+            $dm-&gt;clear();
+        }
+    }
+    
+    protected static function getDatabaseName() {
+        $config = self::$serviceManager-&gt;get('Config');
+        return $config['doctrine']['configuration']['odm_default']['default_db'];
+        
+    }
+</codefragment>
+  </duplication>
+  <duplication lines="10" tokens="14">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/TestConfig.php" line="13"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/TestConfig.php" line="10"/>
+    <codefragment>         'Quiz',
+    ),
+    
+    'module_listener_options' =&gt; array(
+        'config_glob_paths'    =&gt; array(
+            '../../../config/autoload/{,*.}{global,local,testing}.php',
+        ),
+        'module_paths' =&gt; array(
+            'module',
+            'vendor',
+</codefragment>
+  </duplication>
+  <duplication lines="53" tokens="114">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractControllerZendtest.php" line="5"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/UserModuleTest/AbstractControllerZendtest.php" line="5"/>
+    <codefragment>use ApplicationTest\Bootstrap;
+use User\Service\UserService;
+
+class AbstractControllerZendtest extends AbstractHttpControllerTestCase
+{
+    protected $traceError = true;
+      
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+        $this-&gt;setApplicationConfig(
+            include __DIR__ . '/../TestConfig.php'
+        );
+        
+    }
+    
+    protected function loginByEmail($email) {
+        $sm = $this-&gt;getServiceManager();
+        $authService = $sm-&gt;get('zfcuser_auth_service');
+        $authAdapter = $sm-&gt;get('ZfcUser\Authentication\Adapter\AdapterChain');
+        $authPlugin = new \User\Controller\Plugin\AuthPlugin();
+        $authPlugin-&gt;setAuthService($authService);
+        $authPlugin-&gt;setAuthAdapter($authAdapter);
+        $authPlugin-&gt;loginByEmail($email);
+    }
+    
+    protected function loginById($id){
+        $userService = new UserService($this-&gt;getServiceManager());
+        $user = $userService-&gt;findOneBy(array('id' =&gt; $id));
+        if($user == null) {
+            throw new \Exception("The user does not exist.");
+        }
+        $this-&gt;loginByEmail($user-&gt;getEmail());
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();
+</codefragment>
+  </duplication>
+  <duplication lines="32" tokens="33">
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractTestCase.php" line="5"/>
+    <file path="/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/UserModuleTest/AbstractTestCase.php" line="5"/>
+    <codefragment>use ApplicationTest\Bootstrap;
+
+class AbstractTestCase extends PHPUnit_Framework_TestCase
+{
+
+    protected function alterConfig(array $config) {
+        return $config;
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();        
+    }
+
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+</codefragment>
+  </duplication>
+</pmd-cpd>

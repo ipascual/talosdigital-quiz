@@ -1,0 +1,267 @@
+<project name="App" default="all" basedir=".">
+	<property file="./build.properties"/>
+	
+	<!-- *** Targets *** -->
+	<target name="clean" depends="_clean"/>
+	<target name="build" depends="install-dependencies, phpcomposer, zf2-classmap"/>
+	<target name="test" depends="phpunit"/>
+	<target name="report" depends="install-dependencies, phpdepend, phpcs, phpmd, phpcpd, phpdoc, phploc"/>
+
+	<target name="all" depends="clean, prepare, build, test, report" />
+	<target name="quick-deploy" depends="clean, prepare, build" />
+
+	<!-- *** Prepare *** -->
+	<target name="prepare">
+		<mkdir dir="${dir.output}"/>
+		<mkdir dir="${dir.tmp}"/>
+	</target>
+
+	<!-- *** Clean *** -->
+	<target name="_clean">
+		<delete dir="${dir.output}"/>
+	</target>
+	
+	<!-- *** Build *** -->
+	<!-- php composer -->  
+	<target name="phpcomposer">
+		<mkdir dir="${phpcomposer.output}"/>
+		<exec command="curl -s https://getcomposer.org/installer | php" dir="${phpcomposer.target}" passthru="true" />
+		<exec command="php composer.phar install --verbose --dry-run" dir="${phpcomposer.target}" passthru="true" />
+	</target>
+
+	<!-- zf2-classmap -->
+	<target name="zf2-classmap">
+		<exec command="${phing} _zf2-classmap" passthru="true"/>
+	</target>
+	
+	<target name="_zf2-classmap">
+		<foreach param="dirname" absparam="module" target="zf2-classmap-module">
+		  <fileset dir="${dir.php.project}/module">
+		    <type type="dir" />
+		    <depth max="0" min="0" />
+		    <exclude name="bin"/>
+		  </fileset>
+		</foreach>
+	</target>
+	
+	<target name="zf2-classmap-module">
+		<exec command="${zf2.bin}/classmap_generator.php -w" dir="${module}" passthru="true" />
+	</target>
+
+	<!-- *** Report *** -->
+	<target name="install-dependencies">
+		<mkdir dir="${dir.vendor}"/>
+		<exec
+		  command="${pear.bin} config-create ${dir.vendor} ${dir.vendor}/.pearrc"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set php_bin ${php.bin}"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set php_dir ${dir.vendor}/php"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set bin_dir ${dir.vendor}/bin"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set cache_dir ${dir.vendor}/cache"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set cfg_dir ${dir.vendor}/cfg"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set data_dir ${dir.vendor}/data"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set download_dir ${dir.vendor}/download"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set temp_dir ${dir.vendor}/tmp"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set doc_dir ${dir.vendor}/doc"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set test_dir ${dir.vendor}/test"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set www_dir ${dir.vendor}/www"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} config-set auto_discover 1"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install pear"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps phpunit/phploc"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps pear.docblox-project.org/DocBlox"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps pear.pdepend.org/PHP_Depend-beta"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps pear.phpmd.org/PHP_PMD"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps pear.phpunit.de/phpcpd"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps PHP_CodeSniffer"
+		  passthru="true"
+		/>
+		<exec
+		  command="${pear.exec} install --alldeps pear.phing.info/phing"
+		  passthru="true"
+		/>
+	</target>
+	
+	<!-- PHP Depend -->
+	<target name="phpdepend">
+		<exec command="${phing} _phpdepend" passthru="true"/>
+	</target>
+	<target name="_phpdepend">
+		<mkdir dir="${phpdepend.output.xml.dir}"/>
+		<mkdir dir="${phpdepend.output.html.dir}"/>
+	    <exec
+	      command="${phpdepend.exec} ${phpdepend.args}"
+	      dir="${project.basedir}"
+	      passthru="true" />
+	    <xslt
+	      file="${phpdepend.output.xml.file}"
+	      tofile="${phpdepend.output.html.file}"
+	      style="${phpdepend.style}" />
+	</target>
+
+	<!-- PHP Code Sniffer -->
+	<target name="phpcs">
+			<exec command="${phing} _phpcs" passthru="true"/>
+		</target>
+		<target name="_phpcs">
+		<mkdir dir="${phpcs.output.xml.dir}"/>
+		<mkdir dir="${phpcs.output.html.dir}"/>
+		<exec
+			command="${phpcs.exec} ${phpcs.args}"
+			dir="${project.basedir}"
+			passthru="true"
+		/>
+		<xslt
+			file="${phpcs.output.xml.file}"
+			tofile="${phpcs.output.html.file}"
+			style="${phpcs.style}"
+		/>
+	</target>
+	
+	<!-- PHP Mess Detector -->
+	<target name="phpmd">
+			<exec command="${phing} _phpmd" passthru="true"/>
+		</target>
+		<target name="_phpmd">
+			<mkdir dir="${phpmd.output.xml.dir}"/>
+			<mkdir dir="${phpmd.output.html.dir}"/>
+			<exec
+			command="${phpmd.exec} ${phpmd.args}"
+			dir="${project.basedir}"
+			passthru="true"
+			/>
+			<xslt
+			file="${phpmd.output.xml.file}"
+			tofile="${phpmd.output.html.file}"
+			style="${phpmd.style}"
+			/>
+	</target>
+
+	<!-- PHP Copy/Paste detector -->
+	<target name="phpcpd">
+		<exec command="${phing} _phpcpd" passthru="true"/>
+	</target>
+	<target name="_phpcpd">
+		<mkdir dir="${phpcpd.output.xml.dir}"/>
+		<mkdir dir="${phpcpd.output.html.dir}"/>
+		<exec
+			command="${phpcpd.exec} ${phpcpd.args}"
+			dir="${project.basedir}"
+			passthru="true"
+		/>
+		<xslt
+			file="${phpcpd.output.xml.file}"
+			tofile="${phpcpd.output.html.file}"
+			style="${phpcpd.style}"
+		/>
+	</target>
+	
+	<!-- PHP Documentor2 -->
+	<target name="phpdoc">
+		<exec command="${phing} _phpdoc" passthru="true"/>
+	</target>
+	<target name="_phpdoc">
+		<mkdir dir="${phpdoc.output.html.dir}"/>
+		<exec
+			command="${phpdoc.exec} ${phpdoc.args}"
+			dir="${project.basedir}"
+			passthru="true"
+		/>
+	</target>
+
+	<!-- PHP Documentor2 -->
+	<target name="phploc">
+		<exec command="${phing} _phploc" passthru="true"/>
+	</target>
+	<target name="_phploc">
+		<mkdir dir="${phploc.output.html.dir}"/>
+		<exec
+			command="${phploc.exec} ${phploc.args} > ${phploc.output.html.file}"
+			dir="${project.basedir}"
+			passthru="true"
+		/>
+	</target>
+
+	<!-- *** Test *** -->
+	<target name="phpunit">
+		<exec command="${phing} _phpunit" passthru="true"/>
+	</target>
+
+	<target name="_phpunit">
+		<mkdir dir="${phpunit.output.xml.dir}"/>
+		<mkdir dir="${phpunit.output.html.dir}"/>
+
+		<!-- Module testing -->
+		<foreach param="dirname" absparam="module" target="phpunit-module">
+			<fileset dir="${dir.php.project}/module">
+			<type type="dir" />
+			<depth max="0" min="0" />
+			<exclude name="bin"/>
+			</fileset>
+		</foreach>
+	</target>
+	<target name="phpunit-module">
+		<exec command="${phpunit.exec} ${phpunit.args}" dir="${module}/tests" passthru="true" />
+		<xslt
+			file="${phpunit.output.xml.file}"
+			tofile="${junit.output.xml.file}"
+			style="${junit.style}"
+		/>
+	</target>
+
+</project>

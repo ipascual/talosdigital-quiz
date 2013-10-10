@@ -1,0 +1,647 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+			function toggleCodeSection(btn, id)
+			{
+				area = document.getElementById(id);
+				if (area.style.display == 'none')
+					{
+					btn.innerHTML = '-';
+					area.style.display = 'inline';
+					}
+				else
+					{
+					btn.innerHTML = '+';
+					area.style.display = 'none';
+					}
+			}
+		</script><style>
+			.SummaryTitle  { }
+			.SummaryNumber { background-color:#DDDDDD; text-align: center; }
+			.ItemNumber    { background-color: #DDDDDD; }
+			.CodeFragment  { background-color: #BBBBBB; display:none; font:normal normal normal 9pt Courier; }
+			.ExpandButton  { background-color: #FFFFFF; font-size: 8pt; width: 20px; height: 20px; margin:0px; }
+		</style>
+</head>
+<body>
+<h2>Summary of duplicated code</h2>
+    This page summarizes the code fragments that have been found to be replicated in the code.
+    Only those fragments longer than 30 lines of code are shown.
+    <p></p>
+<table border="1" class="summary" cellpadding="2">
+<tr style="background-color:#CCCCCC;">
+<th># duplications</th>
+<th>Total lines</th>
+<th>Total tokens</th>
+<th>Approx # bytes</th>
+</tr>
+<tr>
+<td class="SummaryNumber">7</td>
+<td class="SummaryNumber">434</td>
+<td class="SummaryNumber">902</td>
+<td class="SummaryNumber">3608</td>
+</tr>
+</table>
+<p></p>
+    You expand and collapse the code fragments using the + buttons. You can also navigate to the source code by clicking
+    on the file names.
+    <p></p>
+<table>
+<tr style="background-color: #444444; color: #DDDDDD;">
+<td>ID</td>
+<td>Files</td>
+<td>Lines</td>
+</tr>
+<tr>
+<td class="ItemNumber">1</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php.html#12">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php</a></td>
+<td> line 12</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/Bootstrap.php.html#15">/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/Bootstrap.php</a></td>
+<td> line 15</td>
+</tr>
+</table></td>
+<td># lines : 168</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_1')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_1">ini_set("display_errors", 1); 
+
+chdir(__DIR__);
+
+class Bootstrap
+{
+    protected static $serviceManager;
+    protected static $config;
+    protected static $bootstrap;
+
+    public static function init()
+    {
+        //Environment
+        putenv('APPLICATION_ENV=test');
+
+        // Load the user-defined test configuration file, if it exists; otherwise, load
+        if (is_readable(__DIR__ . '/TestConfig.php')) {
+            $testConfig = include __DIR__ . '/TestConfig.php';
+        } else {
+            $testConfig = include __DIR__ . '/TestConfig.php.dist';
+        }
+
+        $zf2ModulePaths = array();
+
+        if (isset($testConfig['module_listener_options']['module_paths'])) {
+            $modulePaths = $testConfig['module_listener_options']['module_paths'];
+            foreach ($modulePaths as $modulePath) {
+                if (($path = static::findParentPath($modulePath)) ) {
+                    $zf2ModulePaths[] = $path;
+                }
+            }
+        }
+
+        $zf2ModulePaths  = implode(PATH_SEPARATOR, $zf2ModulePaths) . PATH_SEPARATOR;
+        $zf2ModulePaths .= getenv('ZF2_MODULES_TEST_PATHS') ?: (defined('ZF2_MODULES_TEST_PATHS') ? ZF2_MODULES_TEST_PATHS : '');
+
+        static::initAutoloader();
+
+        // use ModuleManager to load this module and it's dependencies
+        $baseConfig = array(
+            'module_listener_options' =&gt; array(
+                'module_paths' =&gt; explode(PATH_SEPARATOR, $zf2ModulePaths),
+            ),
+        );
+
+        $config = ArrayUtils::merge($baseConfig, $testConfig);
+
+        $serviceManager = new ServiceManager(new ServiceManagerConfig());
+        $serviceManager-&gt;setService('ApplicationConfig', $config);
+        $serviceManager-&gt;get('ModuleManager')-&gt;loadModules();
+
+        static::$serviceManager = $serviceManager;
+        static::$config = $config;
+        
+        self::destroyDatabase(true);
+    }
+
+    public static function getServiceManager()
+    {
+        return static::$serviceManager;
+    }
+
+    public static function getConfig()
+    {
+        return static::$config;
+    }
+
+    protected static function initAutoloader()
+    {
+        $vendorPath = static::findParentPath('vendor');
+
+        if (is_readable($vendorPath . '/autoload.php')) {
+            $loader = include $vendorPath . '/autoload.php';
+        } else {
+            $zf2Path = getenv('ZF2_PATH') ?: (defined('ZF2_PATH') ? ZF2_PATH : (is_dir($vendorPath . '/ZF2/library') ? $vendorPath . '/ZF2/library' : false));
+
+            if (!$zf2Path) {
+                throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+            }
+
+            include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+
+        }
+
+        AutoloaderFactory::factory(array(
+            'Zend\Loader\StandardAutoloader' =&gt; array(
+                'autoregister_zf' =&gt; true,
+                'namespaces' =&gt; array(
+                    __NAMESPACE__ =&gt; __DIR__ . '/' . __NAMESPACE__,
+                ),
+            ),
+        ));
+    }
+
+    protected static function findParentPath($path)
+    {
+        $dir = __DIR__;
+        $previousDir = '.';
+        while (!is_dir($dir . '/' . $path)) {
+            $dir = dirname($dir);
+            if ($previousDir === $dir) return false;
+            $previousDir = $dir;
+        }
+        return $dir . '/' . $path;
+    }
+    
+    /**
+     * Common test functions
+     */
+    public static function setUp() {
+        self::createDatabase();
+    }
+    
+    public static function tearDown() {
+        self::destroyDatabase();
+    }
+    
+    protected static function createDatabase(){
+        //Global fixtures
+        $fixturesFolder = __DIR__.'/../../Application/tests/fixtures';
+        try {
+            if ($dir = opendir($fixturesFolder)) {
+                while (false !== ($file = readdir($dir))) {
+                    if ($file != "." &amp;&amp; $file != "..") {
+                        $data = null;
+                        $databaseName = self::getDatabaseName();
+                        require $fixturesFolder."/".$file;
+                        $collection = str_replace(".php", "", $file);
+                        $dm = self::getServiceManager()-&gt;get('doctrine.documentmanager.odm_default');
+                        $collection = $dm-&gt;getConnection()-&gt;selectCollection($databaseName, $collection);
+                        $collection-&gt;batchInsert($data);
+                    }
+                }
+                closedir($dir);
+            }
+        }
+        catch(\Exception $e) {
+            
+        }
+    }
+    
+    protected static function destroyDatabase($force = false) {
+        global $argv, $argc;
+
+        $keep = false;        
+        foreach($argv as $arg) {
+            if($arg == "--debug") {
+                $keep = true;        
+            }
+        }
+        
+        if(! $keep || $force) {
+            $databaseName = self::getDatabaseName();
+            $dm = self::getServiceManager()-&gt;get('doctrine.documentmanager.odm_default');
+            $collections = $dm-&gt;getConnection()-&gt;selectDatabase($databaseName)-&gt;listCollections();
+            foreach ($collections as $collection) {
+                $collection-&gt;remove(array(), array('safe' =&gt; true));
+            }
+            //Clear cache
+            $dm-&gt;clear();
+        }
+    }
+    
+    protected static function getDatabaseName() {
+        $config = self::$serviceManager-&gt;get('Config');
+        return $config['doctrine']['configuration']['odm_default']['default_db'];
+        
+    }
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr>
+<td class="ItemNumber">2</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php.html#28">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php</a></td>
+<td> line 28</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/Bootstrap.php.html#26">/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/Bootstrap.php</a></td>
+<td> line 26</td>
+</tr>
+</table></td>
+<td># lines : 65</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_2')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_2">        if (is_readable(__DIR__ . '/TestConfig.php')) {
+            $testConfig = include __DIR__ . '/TestConfig.php';
+        } else {
+            $testConfig = include __DIR__ . '/TestConfig.php.dist';
+        }
+
+        $zf2ModulePaths = array();
+
+        if (isset($testConfig['module_listener_options']['module_paths'])) {
+            $modulePaths = $testConfig['module_listener_options']['module_paths'];
+            foreach ($modulePaths as $modulePath) {
+                if (($path = static::findParentPath($modulePath)) ) {
+                    $zf2ModulePaths[] = $path;
+                }
+            }
+        }
+
+        $zf2ModulePaths  = implode(PATH_SEPARATOR, $zf2ModulePaths) . PATH_SEPARATOR;
+        $zf2ModulePaths .= getenv('ZF2_MODULES_TEST_PATHS') ?: (defined('ZF2_MODULES_TEST_PATHS') ? ZF2_MODULES_TEST_PATHS : '');
+
+        static::initAutoloader();
+
+        // use ModuleManager to load this module and it's dependencies
+        $baseConfig = array(
+            'module_listener_options' =&gt; array(
+                'module_paths' =&gt; explode(PATH_SEPARATOR, $zf2ModulePaths),
+            ),
+        );
+
+        $config = ArrayUtils::merge($baseConfig, $testConfig);
+
+        $serviceManager = new ServiceManager(new ServiceManagerConfig());
+        $serviceManager-&gt;setService('ApplicationConfig', $config);
+        $serviceManager-&gt;get('ModuleManager')-&gt;loadModules();
+
+        static::$serviceManager = $serviceManager;
+        static::$config = $config;
+        
+        self::destroyDatabase(true);
+    }
+
+    public static function getServiceManager()
+    {
+        return static::$serviceManager;
+    }
+
+    public static function getConfig()
+    {
+        return static::$config;
+    }
+
+    protected static function initAutoloader()
+    {
+        $vendorPath = static::findParentPath('vendor');
+
+        if (is_readable($vendorPath . '/autoload.php')) {
+            $loader = include $vendorPath . '/autoload.php';
+        } else {
+            $zf2Path = getenv('ZF2_PATH') ?: (defined('ZF2_PATH') ? ZF2_PATH : (is_dir($vendorPath . '/ZF2/library') ? $vendorPath . '/ZF2/library' : false));
+
+            if (!$zf2Path) {
+                throw new RuntimeException('Unable to load ZF2. Run `php composer.phar install` or define a ZF2_PATH environment variable.');
+            }
+
+            include $zf2Path . '/Zend/Loader/AutoloaderFactory.php';
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr>
+<td class="ItemNumber">3</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractControllerZendtest.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractControllerZendtest.php</a></td>
+<td> line 5</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/AbstractControllerZendtest.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/AbstractControllerZendtest.php</a></td>
+<td> line 5</td>
+</tr>
+</table></td>
+<td># lines : 53</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_3')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_3">use ApplicationTest\Bootstrap;
+use User\Service\UserService;
+
+class AbstractControllerZendtest extends AbstractHttpControllerTestCase
+{
+    protected $traceError = true;
+      
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+        $this-&gt;setApplicationConfig(
+            include __DIR__ . '/../TestConfig.php'
+        );
+        
+    }
+    
+    protected function loginByEmail($email) {
+        $sm = $this-&gt;getServiceManager();
+        $authService = $sm-&gt;get('zfcuser_auth_service');
+        $authAdapter = $sm-&gt;get('ZfcUser\Authentication\Adapter\AdapterChain');
+        $authPlugin = new \User\Controller\Plugin\AuthPlugin();
+        $authPlugin-&gt;setAuthService($authService);
+        $authPlugin-&gt;setAuthAdapter($authAdapter);
+        $authPlugin-&gt;loginByEmail($email);
+    }
+    
+    protected function loginById($id){
+        $userService = new UserService($this-&gt;getServiceManager());
+        $user = $userService-&gt;findOneBy(array('id' =&gt; $id));
+        if($user == null) {
+            throw new \Exception("The user does not exist.");
+        }
+        $this-&gt;loginByEmail($user-&gt;getEmail());
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr>
+<td class="ItemNumber">4</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractControllerZendtest.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractControllerZendtest.php</a></td>
+<td> line 5</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/UserModuleTest/AbstractControllerZendtest.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/UserModuleTest/AbstractControllerZendtest.php</a></td>
+<td> line 5</td>
+</tr>
+</table></td>
+<td># lines : 53</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_4')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_4">use ApplicationTest\Bootstrap;
+use User\Service\UserService;
+
+class AbstractControllerZendtest extends AbstractHttpControllerTestCase
+{
+    protected $traceError = true;
+      
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+        $this-&gt;setApplicationConfig(
+            include __DIR__ . '/../TestConfig.php'
+        );
+        
+    }
+    
+    protected function loginByEmail($email) {
+        $sm = $this-&gt;getServiceManager();
+        $authService = $sm-&gt;get('zfcuser_auth_service');
+        $authAdapter = $sm-&gt;get('ZfcUser\Authentication\Adapter\AdapterChain');
+        $authPlugin = new \User\Controller\Plugin\AuthPlugin();
+        $authPlugin-&gt;setAuthService($authService);
+        $authPlugin-&gt;setAuthAdapter($authAdapter);
+        $authPlugin-&gt;loginByEmail($email);
+    }
+    
+    protected function loginById($id){
+        $userService = new UserService($this-&gt;getServiceManager());
+        $user = $userService-&gt;findOneBy(array('id' =&gt; $id));
+        if($user == null) {
+            throw new \Exception("The user does not exist.");
+        }
+        $this-&gt;loginByEmail($user-&gt;getEmail());
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr>
+<td class="ItemNumber">5</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractTestCase.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractTestCase.php</a></td>
+<td> line 5</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/AbstractTestCase.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/QuizTest/AbstractTestCase.php</a></td>
+<td> line 5</td>
+</tr>
+</table></td>
+<td># lines : 32</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_5')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_5">use ApplicationTest\Bootstrap;
+
+class AbstractTestCase extends PHPUnit_Framework_TestCase
+{
+
+    protected function alterConfig(array $config) {
+        return $config;
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();        
+    }
+
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr>
+<td class="ItemNumber">6</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractTestCase.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/ApplicationTest/AbstractTestCase.php</a></td>
+<td> line 5</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/UserModuleTest/AbstractTestCase.php.html#5">/vagrant/htdocs/talosdigital-quiz/zf2/module/User/tests/UserModuleTest/AbstractTestCase.php</a></td>
+<td> line 5</td>
+</tr>
+</table></td>
+<td># lines : 32</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_6')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_6">use ApplicationTest\Bootstrap;
+
+class AbstractTestCase extends PHPUnit_Framework_TestCase
+{
+
+    protected function alterConfig(array $config) {
+        return $config;
+    }
+    
+    protected function getServiceManager() {
+        return Bootstrap::getServiceManager();        
+    }
+
+    /**
+     * Run before every test
+     * 
+     * Load fixtures
+     */
+    public function setUp()
+    {
+        Bootstrap::setUp();        
+
+    }
+
+    /**
+     * Run after every test
+     * 
+     * Delete all collections
+     */
+    public function tearDown()
+    {
+        Bootstrap::tearDown();        
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+<tr>
+<td class="ItemNumber">7</td>
+<td><table>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php.html#153">/vagrant/htdocs/talosdigital-quiz/zf2/module/Application/tests/Bootstrap.php</a></td>
+<td> line 153</td>
+</tr>
+<tr>
+<td><a href="../src//vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/Bootstrap.php.html#147">/vagrant/htdocs/talosdigital-quiz/zf2/module/Quiz/tests/Bootstrap.php</a></td>
+<td> line 147</td>
+</tr>
+</table></td>
+<td># lines : 31</td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2" valign="top"><table><tr>
+<td valign="top"><button class="ExpandButton" onclick="blur(); toggleCodeSection(this, 'frag_7')">+</button></td>
+<td><textarea cols="100" rows="30" wrap="off" class="CodeFragment" style="display:none;" id="frag_7">    protected static function destroyDatabase($force = false) {
+        global $argv, $argc;
+
+        $keep = false;        
+        foreach($argv as $arg) {
+            if($arg == "--debug") {
+                $keep = true;        
+            }
+        }
+        
+        if(! $keep || $force) {
+            $databaseName = self::getDatabaseName();
+            $dm = self::getServiceManager()-&gt;get('doctrine.documentmanager.odm_default');
+            $collections = $dm-&gt;getConnection()-&gt;selectDatabase($databaseName)-&gt;listCollections();
+            foreach ($collections as $collection) {
+                $collection-&gt;remove(array(), array('safe' =&gt; true));
+            }
+            //Clear cache
+            $dm-&gt;clear();
+        }
+    }
+    
+    protected static function getDatabaseName() {
+        $config = self::$serviceManager-&gt;get('Config');
+        return $config['doctrine']['configuration']['odm_default']['default_db'];
+        
+    }
+
+}
+
+Bootstrap::init();
+</textarea></td>
+</tr></table></td>
+</tr>
+<tr><td colspan="2"><hr></td></tr>
+</table>
+</body>
+</html>
