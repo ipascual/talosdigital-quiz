@@ -9,7 +9,7 @@ return array(
 				"from_name" => "Talos Digital"
 		),
 		"emails" => array(
-			"admin" => "vitaly@talosdigital.com"
+			"admin" => "info@talosdigital.com"
 		),
 		'template_vars' => array(
 			"company" => "Talos Digital",
