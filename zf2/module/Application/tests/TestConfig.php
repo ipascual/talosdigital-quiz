@@ -1,32 +1,13 @@
 <?php
 return array(
     'modules' => array(
-        'MyZend',
-
-		//Database
+        'Application',
 		'DoctrineModule',
  		'DoctrineMongoODMModule',
-
-		//User
- 		'ZfcBase',     
- 		'ZfcUser',
- 		'ZfcUserDoctrineMongoODM',
- 		'BjyAuthorize', 
- 		//'Facebook',
- 		'User',
- 		'Minify',
- 		'Notification',
-
-		//Application
-        'Application',
- 		'Email',
- 		'Media',
- 		'Geolocation',
- 		'Cms',
- 		'Estate',
- 		'Subscription',
- 		'Sales',
- 		'Report'
+        'MyZend',
+        'User',
+        'Email',
+        'Quiz',
     ),
     
     'module_listener_options' => array(
