@@ -7,7 +7,7 @@
 	<target name="test" depends="phpunit"/>
 	<target name="report" depends="install-dependencies, phpdepend, phpcs, phpmd, phpcpd, phpdoc, phploc"/>
 
-	<target name="all" depends="clean, prepare, build, test, report" />
+	<target name="all" depends="prepare, build, test, report" />
 	<target name="quick-deploy" depends="clean, prepare, build" />
 
 	<!-- *** Prepare *** -->
